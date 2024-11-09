@@ -3,7 +3,6 @@ from discount_module import DiscountModule
 
 app = Flask(__name__)
 
-# Define a mock list of items with more variety
 MOCK_ITEMS = [
     {"name": "T-Shirt", "price": 350.0, "category": "Clothing"},
     {"name": "Hat", "price": 250.0, "category": "Accessories"},
@@ -19,16 +18,13 @@ MOCK_ITEMS = [
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    final_price = None  # Default value for final_price
+    final_price = None  
     
     if request.method == 'POST':
-        # Get selected item names from the form
         selected_item_names = request.form.getlist('selected_items')
         
-        # Filter MOCK_ITEMS to get only the selected items
         selected_items = [item for item in MOCK_ITEMS if item['name'] in selected_item_names]
         
-        # Extract names, prices, and apply quantity for each selected item
         item_names = []
         item_prices = []
         for item in selected_items:
@@ -40,11 +36,9 @@ def index():
             
             item_names.append([item_name,item_category])
             item_prices.append(total_price_for_item)
-        # Gather and validate discount campaign data
         campaigns = []
-        error = None  # Initialize error message variable
+        error = None  
 
-        # Validate and add Fixed Amount Discount (ignoring if 0 or negative)
         if request.form.get('fixed_amount'):
             fixed_amount = float(request.form['fixed_amount'])
             if fixed_amount < 0:
@@ -55,7 +49,6 @@ def index():
                     'amount': fixed_amount
                 })
 
-        # Validate and add Percentage Discount (ignoring if 0 or negative)
         if request.form.get('percentage'):
             percentage = float(request.form['percentage'])
             if percentage < 0:
@@ -68,7 +61,6 @@ def index():
                     'percentage': percentage
                 })
 
-        # Validate and add Category Discount (ignoring if 0 or negative)
         if request.form.get('category') and request.form.get('category_percentage'):
             category_percentage = float(request.form['category_percentage'])
             if category_percentage < 0:
@@ -80,7 +72,6 @@ def index():
                     'percentage': category_percentage
                 })
 
-        # Validate and add Points Discount (ignoring if 0 or negative)
         if request.form.get('points'):
             points = int(request.form['points'])
             if points < 0:
@@ -91,7 +82,6 @@ def index():
                     'points': points
                 })
 
-        # Validate and add Seasonal Discount (ignoring if 0 or negative)
         if request.form.get('seasonal_every_x') and request.form.get('seasonal_discount_y'):
             every_x_thb = float(request.form['seasonal_every_x'])
             discount_y_thb = float(request.form['seasonal_discount_y'])
@@ -106,11 +96,9 @@ def index():
                     'discount_y_thb': discount_y_thb
                 })
 
-        # If there was an error, show it on the page
         if error:
             return render_template('index.html', error=error, final_price=None, items=MOCK_ITEMS)
 
-        # Calculate final price for selected items if no errors
         discount_module = DiscountModule(item_names, item_prices, campaigns)
         try:
             final_price = discount_module.apply_discounts()
