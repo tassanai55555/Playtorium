@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Discount Calculator</title>
+  </head>
+  <body>
+    <h1>Discount Calculator</h1>
+
+    <!-- Display error messages if there are any -->
+    {% if error %}
+    <p style="color: red">{{ error }}</p>
+    {% endif %}
+
+    <!-- Display list of mock items with checkboxes and quantity inputs -->
+    <h2>Select Items in Cart</h2>
+    <form action="/" method="post">
+      <ul>
+        {% for item in items %}
+        <li>
+          <input
+            type="checkbox"
+            name="selected_items"
+            value="{{ item.name }}"
+          />
+          {{ item.name }} - {{ item.price }} THB (Category: {{ item.category }})
+          <label>Quantity:</label>
+          <input
+            type="number"
+            name="quantity_{{ item.name }}"
+            min="1"
+            value="1"
+          />
+        </li>
+        {% endfor %}
+      </ul>
+
+      <h2>Discount Campaigns</h2>
+
+      <label>Fixed Amount Discount:</label>
+      <input type="number" name="fixed_amount" placeholder="Amount" /><br />
+
+      <label>Percentage Discount:</label>
+      <input type="number" name="percentage" placeholder="Percentage" /><br />
+
+      <label>Category Discount:</label>
+      <input
+        type="text"
+        name="category"
+        placeholder="Category"
+      />
+      <input
+        type="number"
+        name="category_percentage"
+        placeholder="Percentage"
+      /><br />
+
+      <label>Points Discount:</label>
+      <input type="number" name="points" placeholder="Points" /><br />
+
+      <label>Seasonal Discount:</label>
+      <input type="number" name="seasonal_every_x" placeholder="Every X THB" />
+      <input
+        type="number"
+        name="seasonal_discount_y"
+        placeholder="Discount Y THB"
+      /><br />
+
+      <button type="submit">Calculate Final Price</button>
+    </form>
+
+    <!-- Result display section -->
+    {% if final_price is not none %}
+    <h2>Result</h2>
+    <p>Final Price: {{ final_price }} THB</p>
+    {% endif %}
+  </body>
+</html>
